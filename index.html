@@ -1,0 +1,696 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FeBuddy - Pengingat Tablet Fe</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #fff5f8;
+  color: #333;
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(135deg, #ff7aa2, #ff4f81);
+  color: white;
+  padding: 25px;
+  text-align: center;
+  border-radius: 0 0 25px 25px;
+}
+
+header h1 { font-size: 28px; }
+header p { margin-top: 7px; }
+
+.container {
+  width: 100%;
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 5px 20px rgba(255,79,129,.12);
+}
+
+.clock-title {
+  text-align: center;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.clock {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  color: #ff4f81;
+  margin-top: 8px;
+}
+
+.timezone {
+  text-align: center;
+  color: #999;
+  font-size: 13px;
+  margin-top: 5px;
+}
+
+.reminder {
+  text-align: center;
+  background: #fff0f5;
+  border: 2px solid #ffbfd0;
+}
+
+.reminder h2,
+.tips-card h2 {
+  color: #ff4f81;
+}
+
+.reminder-time {
+  font-size: 42px;
+  font-weight: bold;
+  color: #ff4f81;
+  margin: 12px 0;
+}
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 12px 18px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: .2s;
+}
+
+button:hover { transform: translateY(-2px); }
+
+.primary {
+  background: #ff4f81;
+  color: white;
+}
+
+.success {
+  background: #dff7e8;
+  color: #207a45;
+}
+
+.secondary {
+  background: #ffdce7;
+  color: #b52e59;
+}
+
+.danger {
+  background: #ffe0e0;
+  color: #c62828;
+}
+
+.take-medicine-wrap {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed #ffc2d3;
+}
+
+.take-medicine-btn {
+  width: 100%;
+  max-width: 320px;
+  background: linear-gradient(135deg, #ff7aa2, #ff4f81);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 5px 12px rgba(255,79,129,.2);
+}
+
+.take-medicine-note {
+  margin-top: 7px;
+  color: #9a7580;
+  font-size: 12px;
+}
+
+.setting { margin-top: 15px; }
+
+input[type="time"] {
+  padding: 11px;
+  border: 2px solid #ffc2d3;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.status {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f5f5f5;
+  font-size: 14px;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-top: 15px;
+}
+
+.day {
+  text-align: center;
+  padding: 10px 3px;
+  border-radius: 12px;
+  background: #fafafa;
+  border: 1px solid #eee;
+}
+
+.day.done {
+  background: #ffe0eb;
+  border-color: #ff9fba;
+}
+
+.day-name {
+  font-size: 12px;
+  color: #777;
+}
+
+.check {
+  margin-top: 5px;
+  font-size: 20px;
+}
+
+.tips-card h2 { margin-bottom: 14px; }
+
+.tips-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px;
+  background: #fff6f9;
+  border: 1px solid #ffe0e9;
+  border-radius: 14px;
+  line-height: 1.55;
+  color: #5b4a50;
+}
+
+.tip-icon {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: #ffe1eb;
+  font-size: 18px;
+}
+
+footer {
+  text-align: center;
+  padding: 4px 20px 24px;
+  color: #a17e89;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+#reminderPopup {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,.45);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.popup-box {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border-radius: 25px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,.2);
+}
+
+.popup-icon { font-size: 55px; }
+
+.popup-box h2 {
+  color: #ff4f81;
+  margin: 10px 0;
+}
+
+.popup-box p {
+  color: #666;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 500px) {
+  .clock { font-size: 32px; }
+  .reminder-time { font-size: 36px; }
+  .days { gap: 3px; }
+  .tips-card { padding: 17px; }
+  .tip-item { padding: 11px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌸 FeBuddy</h1>
+  <p>Pengingat Tablet Fe 💗</p>
+</header>
+
+<main class="container">
+
+  <section class="card">
+    <div class="clock-title">🕐 Waktu Sekarang</div>
+    <div id="clock" class="clock">--:--:--</div>
+    <div class="timezone">Waktu Indonesia Barat (WIB)</div>
+  </section>
+
+  <section class="card reminder">
+    <h2>💊 Jadwal Tablet Fe</h2>
+    <div id="reminderDisplay" class="reminder-time">20:00</div>
+    <p>Jangan lupa minum tablet Fe sesuai jadwalmu ya 💗</p>
+
+    <br>
+
+    <button class="primary" onclick="openSettings()">
+      ⚙️ Atur Waktu
+    </button>
+
+    <div class="take-medicine-wrap">
+      <button class="take-medicine-btn" onclick="takeMedicine()">
+        ✓ Sudah Minum Hari Ini
+      </button>
+      <p class="take-medicine-note">
+        Tekan setelah selesai minum untuk mencatat progress hari ini.
+      </p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📅 Progress 7 Hari</h2>
+    <div id="daysContainer" class="days"></div>
+    <p style="text-align:center;margin-top:15px">
+      🔥 Streak: <b id="streak">0</b> hari
+    </p>
+  </section>
+
+  <section id="settingsCard" class="card">
+    <h2>⚙️ Pengaturan Alarm</h2>
+
+    <div class="setting">
+      <label for="timeInput"><b>Jam minum:</b></label>
+      <br><br>
+      <input type="time" id="timeInput" value="20:00">
+      <button class="primary" onclick="saveTime()">
+        💾 Simpan Waktu
+      </button>
+    </div>
+
+    <div class="setting">
+      <button id="alarmButton" class="success" onclick="toggleAlarm()">
+        🔔 Aktifkan Alarm
+      </button>
+
+      <button class="secondary" onclick="testAlarm()">
+        🧪 Tes Alarm
+      </button>
+    </div>
+
+    <div id="alarmStatus" class="status">
+      🔕 Alarm belum aktif
+    </div>
+
+    <div class="setting">
+      <button class="danger" onclick="resetData()">
+        🗑️ Reset Semua Data
+      </button>
+    </div>
+  </section>
+
+  <section class="card tips-card">
+    <h2>💡 Tips Minum Tablet Fe</h2>
+    <ul class="tips-list">
+      <li class="tip-item">
+        <span class="tip-icon">🩺</span>
+        <span>Minum tablet Fe sesuai anjuran tenaga kesehatan.</span>
+      </li>
+      <li class="tip-item">
+        <span class="tip-icon">🕒</span>
+        <span>Usahakan minum pada waktu yang sama setiap hari agar lebih mudah diingat.</span>
+      </li>
+      <li class="tip-item">
+        <span class="tip-icon">✅</span>
+        <span>Setelah minum, tekan tombol “Sudah Minum Hari Ini” untuk mencatat progress.</span>
+      </li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 FeBuddy · Kelompok 2 PromKes Vitacea
+  <br>
+  Gunakan tablet Fe sesuai anjuran tenaga kesehatan.
+</footer>
+
+<div id="reminderPopup">
+  <div class="popup-box">
+    <div class="popup-icon">💊</div>
+    <h2>Waktunya Tablet Fe!</h2>
+    <p>Jangan lupa minum tablet Fe sesuai jadwalmu ya 💗</p>
+
+    <button class="success" onclick="takeMedicine()">
+      ✓ Sudah Minum
+    </button>
+
+    <button class="secondary" onclick="snoozeReminder()">
+      💤 Ingatkan Nanti
+    </button>
+  </div>
+</div>
+
+<script>
+let data;
+
+try {
+  data = JSON.parse(localStorage.getItem("feBuddyData"));
+} catch (error) {
+  data = null;
+}
+
+if (!data || typeof data !== "object") {
+  data = {
+    reminderTime: "20:00",
+    alarmEnabled: false,
+    history: {},
+    snoozeUntil: null,
+    lastTriggered: ""
+  };
+}
+
+if (!data.history) data.history = {};
+if (!data.reminderTime) data.reminderTime = "20:00";
+if (typeof data.alarmEnabled !== "boolean") data.alarmEnabled = false;
+
+let audioContext = null;
+let alarmInterval = null;
+let popupOpen = false;
+
+function getWIBDate() {
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  return new Date(utc + 7 * 60 * 60 * 1000);
+}
+
+function getDateKey() {
+  const d = getWIBDate();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function saveData() {
+  localStorage.setItem("feBuddyData", JSON.stringify(data));
+}
+
+function updateClock() {
+  const d = getWIBDate();
+  document.getElementById("clock").textContent =
+    [d.getHours(), d.getMinutes(), d.getSeconds()]
+      .map(n => String(n).padStart(2, "0"))
+      .join(":");
+}
+
+setInterval(updateClock, 1000);
+updateClock();
+
+function prepareAudio() {
+  const AudioClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioClass) return;
+
+  if (!audioContext) audioContext = new AudioClass();
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+}
+
+function beep() {
+  if (!audioContext) return;
+
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.value = 880;
+  gain.gain.value = 0.25;
+
+  oscillator.connect(gain);
+  gain.connect(audioContext.destination);
+
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + 0.5);
+}
+
+function startAlarmSound() {
+  stopAlarmSound();
+  beep();
+
+  alarmInterval = setInterval(() => {
+    if (popupOpen) beep();
+  }, 1500);
+}
+
+function stopAlarmSound() {
+  if (alarmInterval !== null) {
+    clearInterval(alarmInterval);
+    alarmInterval = null;
+  }
+}
+
+function showPopup() {
+  popupOpen = true;
+  document.getElementById("reminderPopup").style.display = "flex";
+  prepareAudio();
+  startAlarmSound();
+}
+
+function closePopup() {
+  popupOpen = false;
+  document.getElementById("reminderPopup").style.display = "none";
+  stopAlarmSound();
+}
+
+function toggleAlarm() {
+  prepareAudio();
+  beep();
+
+  data.alarmEnabled = !data.alarmEnabled;
+  saveData();
+  updateAlarmUI();
+}
+
+function updateAlarmUI() {
+  const button = document.getElementById("alarmButton");
+  const status = document.getElementById("alarmStatus");
+
+  if (data.alarmEnabled) {
+    button.textContent = "🔕 Matikan Alarm";
+    button.className = "danger";
+    status.textContent = `🔔 Alarm aktif — ${data.reminderTime} WIB`;
+  } else {
+    button.textContent = "🔔 Aktifkan Alarm";
+    button.className = "success";
+    status.textContent = "🔕 Alarm belum aktif";
+  }
+}
+
+function saveTime() {
+  const input = document.getElementById("timeInput");
+
+  if (!input.value) {
+    alert("Pilih waktu terlebih dahulu.");
+    return;
+  }
+
+  data.reminderTime = input.value;
+  data.lastTriggered = "";
+  data.snoozeUntil = null;
+
+  saveData();
+
+  document.getElementById("reminderDisplay").textContent = data.reminderTime;
+  updateAlarmUI();
+
+  alert(`Waktu berhasil disimpan: ${data.reminderTime} WIB`);
+}
+
+function checkAlarm() {
+  if (data.snoozeUntil && Date.now() >= data.snoozeUntil) {
+    data.snoozeUntil = null;
+    saveData();
+    showPopup();
+    return;
+  }
+
+  if (!data.alarmEnabled || popupOpen) return;
+
+  const d = getWIBDate();
+  const currentTime =
+    `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+
+  const today = getDateKey();
+
+  if (data.history[today]) return;
+  if (data.lastTriggered === today) return;
+
+  if (currentTime === data.reminderTime) {
+    data.lastTriggered = today;
+    saveData();
+    showPopup();
+  }
+}
+
+setInterval(checkAlarm, 1000);
+
+function takeMedicine() {
+  const today = getDateKey();
+  const alreadyRecorded = data.history[today] === true;
+
+  data.history[today] = true;
+  data.snoozeUntil = null;
+
+  saveData();
+  closePopup();
+  renderDays();
+
+  if (alreadyRecorded) {
+    alert("Catatan minum tablet Fe hari ini sudah tersimpan 💗");
+  } else {
+    alert("Mantap! Tablet Fe hari ini sudah dicatat 💗");
+  }
+}
+
+function snoozeReminder() {
+  closePopup();
+  data.snoozeUntil = Date.now() + 5 * 60 * 1000;
+  saveData();
+}
+
+function testAlarm() {
+  prepareAudio();
+  showPopup();
+}
+
+function resetData() {
+  const confirmReset = confirm("Yakin ingin menghapus semua data FeBuddy?");
+  if (!confirmReset) return;
+
+  closePopup();
+
+  data = {
+    reminderTime: "20:00",
+    alarmEnabled: false,
+    history: {},
+    snoozeUntil: null,
+    lastTriggered: ""
+  };
+
+  saveData();
+
+  document.getElementById("timeInput").value = "20:00";
+  document.getElementById("reminderDisplay").textContent = "20:00";
+
+  renderDays();
+  updateAlarmUI();
+
+  alert("Semua data berhasil direset.");
+}
+
+function renderDays() {
+  const container = document.getElementById("daysContainer");
+  container.innerHTML = "";
+
+  const today = getWIBDate();
+  const names = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const key = `${year}-${month}-${day}`;
+    const done = data.history[key] === true;
+
+    const div = document.createElement("div");
+    div.className = "day" + (done ? " done" : "");
+
+    div.innerHTML = `
+      <div class="day-name">${names[date.getDay()]}</div>
+      <div>${date.getDate()}</div>
+      <div class="check">${done ? "✓" : "○"}</div>
+    `;
+
+    container.appendChild(div);
+  }
+
+  updateStreak();
+}
+
+function updateStreak() {
+  const element = document.getElementById("streak");
+  let streak = 0;
+  const date = getWIBDate();
+
+  while (true) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const key = `${year}-${month}-${day}`;
+
+    if (data.history[key]) {
+      streak++;
+      date.setDate(date.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  element.textContent = streak;
+}
+
+function openSettings() {
+  document.getElementById("settingsCard").scrollIntoView({
+    behavior: "smooth"
+  });
+}
+
+document.getElementById("timeInput").value = data.reminderTime;
+document.getElementById("reminderDisplay").textContent = data.reminderTime;
+
+updateAlarmUI();
+renderDays();
+</script>
+
+</body>
+</html>
